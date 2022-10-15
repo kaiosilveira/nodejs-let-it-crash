@@ -1,5 +1,5 @@
 import { Cluster, Worker } from 'cluster';
-import handleClusterExit from '.';
+import handleWorkerExit from '.';
 import ILogger from '../../../observability/logger';
 
 describe('handleWorkerExit', () => {
@@ -22,7 +22,7 @@ describe('handleWorkerExit', () => {
     const code = 0;
     const signal = undefined;
 
-    const handler = handleClusterExit({ cluster, logger });
+    const handler = handleWorkerExit({ cluster, logger });
     handler(worker, code, signal);
 
     expect(fakeLoggerInfoFn).toHaveBeenCalledTimes(1);
@@ -38,7 +38,7 @@ describe('handleWorkerExit', () => {
     const code = 1;
     const signal = undefined;
 
-    const handler = handleClusterExit({ cluster, logger });
+    const handler = handleWorkerExit({ cluster, logger });
     handler(worker, code, signal);
 
     expect(cluster.fork).toHaveBeenCalledTimes(1);

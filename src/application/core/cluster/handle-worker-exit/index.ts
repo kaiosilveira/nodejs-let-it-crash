@@ -1,7 +1,7 @@
 import { Cluster, Worker } from 'cluster';
 import ILogger from '../../../observability/logger';
 
-const handleClusterExit = ({ cluster, logger }: { cluster: Cluster; logger: ILogger }) => {
+const handleWorkerExit = ({ cluster, logger }: { cluster: Cluster; logger: ILogger }) => {
   return (worker: Worker, code: number, signal?: number) => {
     if (code === 0) {
       logger.info({
@@ -22,4 +22,4 @@ const handleClusterExit = ({ cluster, logger }: { cluster: Cluster; logger: ILog
   };
 };
 
-export default handleClusterExit;
+export default handleWorkerExit;
