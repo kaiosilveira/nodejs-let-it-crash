@@ -8,7 +8,7 @@ We start to understand production when we decide to give up of component-level s
 
 ## Implementation details
 
-To give a simple yet complete example, this application implements a "to-do list" type of application, built using Express, that implements the "Let it crash!" philosophy. It runs on an application-managed NodeJS cluster, with one cluster allocated for each CPU core. My test was made in a eight-core MacBook Pro, but it should work just fine for any other multi-core spec as well.
+To give a simple yet complete example, this application implements a "to-do list", built using Express, that applies the "Let it crash!" philosophy. It runs on an application-managed NodeJS cluster, with one process worker allocated for each CPU core. My test was made in a eight-core MacBook Pro, but it should work just fine for any other multi-core spec as well.
 
 ### Cluster configuration
 
@@ -33,7 +33,7 @@ export type ForkWorkersFnProps = { env: ApplicationEnv; logger: ILogger; cluster
 
 const forkWorkers = ({ env, logger, cluster }: ForkWorkersFnProps) => {
   const { AVAILABLE_CPUs } = env;
-  logger.info({ msg: `Available of CPUs is ${AVAILABLE_CPUs}` });
+  logger.info({ msg: `Number of available CPUs is ${AVAILABLE_CPUs}` });
   logger.info({ msg: `Primary replica ${env.PID} is running` });
 
   for (let i = 0; i < AVAILABLE_CPUs; i++) {
@@ -44,26 +44,30 @@ const forkWorkers = ({ env, logger, cluster }: ForkWorkersFnProps) => {
 };
 ```
 
-The `handleClusterExit` function ensures that we are creating a new worker whenever an existing worker dies (i.e. exits with a status code different than zero), and it looks like this:
+The `handleWorkerExit` function ensures that we are creating a new worker whenever an existing worker dies (i.e. exits with a status code different than zero), and it looks like this:
 
 ```typescript
-const handleWorkerExit = ({ cluster, logger }: { cluster: Cluster; logger: ILogger }) => {
+export type HandleWorkerExitFnProps = { cluster: Cluster; logger: ILogger };
+
+const handleWorkerExit = ({ cluster, logger }: HandleWorkerExitFnProps) => {
   return (worker: Worker, code: number, signal?: number) => {
+    const logProps = { pId: worker.process.pid, at: new Date() };
+
     if (code === 0) {
-      logger.info({ msg: `worker ${worker.process.pid} exited with code '0'` });
-      return;
+      logger.info({ msg: `worker ${worker.process.pid} exited with code '0'`, ...logProps });
+    } else {
+      logger.info({
+        msg: `worker ${worker.process.pid} died with code '${code}' and signal '${signal}'. Forking a new one...`,
+        ...logProps,
+      });
+
+      cluster.fork();
     }
-
-    logger.info({
-      msg: `worker ${worker.process.pid} died with code '${code}' and signal '${signal}'. Forking a new one...`,
-    });
-
-    cluster.fork();
   };
 };
 ```
 
-The `initExpressWebServerWorker` function, as its name's suggesting, simply initiates a child express web server:
+The `initExpressWebServerWorker` function, as its name is suggesting, simply initiates a child express web server:
 
 ```typescript
 const initExpressWebServerWorker = ({
@@ -89,26 +93,26 @@ And, with that, we're all set! The app initialization output looks like this:
 
 ```console
 ➜ yarn dev
-yarn run v1.22.17
+yarn run v1.22.19
 $ ts-node src/index.ts
-{"msg":"Available of CPUs is 8"}
-{"msg":"Primary replica 60594 is running"}
-{"msg":"Worker 60605 started","pId":60605,"at":"2022-10-15T11:11:19.850Z"}
-{"msg":"worker 60605 listening at 3000 🚀","pId":60605,"at":"2022-10-15T11:11:19.930Z"}
-{"msg":"Worker 60608 started","pId":60608,"at":"2022-10-15T11:11:20.085Z"}
-{"msg":"Worker 60604 started","pId":60604,"at":"2022-10-15T11:11:20.099Z"}
-{"msg":"worker 60604 listening at 3000 🚀","pId":60604,"at":"2022-10-15T11:11:20.118Z"}
-{"msg":"worker 60608 listening at 3000 🚀","pId":60608,"at":"2022-10-15T11:11:20.132Z"}
-{"msg":"Worker 60610 started","pId":60610,"at":"2022-10-15T11:11:20.151Z"}
-{"msg":"worker 60610 listening at 3000 🚀","pId":60610,"at":"2022-10-15T11:11:20.165Z"}
-{"msg":"Worker 60609 started","pId":60609,"at":"2022-10-15T11:11:20.198Z"}
-{"msg":"worker 60609 listening at 3000 🚀","pId":60609,"at":"2022-10-15T11:11:20.210Z"}
-{"msg":"Worker 60603 started","pId":60603,"at":"2022-10-15T11:11:20.222Z"}
-{"msg":"worker 60603 listening at 3000 🚀","pId":60603,"at":"2022-10-15T11:11:20.237Z"}
-{"msg":"Worker 60607 started","pId":60607,"at":"2022-10-15T11:11:20.245Z"}
-{"msg":"worker 60607 listening at 3000 🚀","pId":60607,"at":"2022-10-15T11:11:20.255Z"}
-{"msg":"Worker 60611 started","pId":60611,"at":"2022-10-15T11:11:20.283Z"}
-{"msg":"worker 60611 listening at 3000 🚀","pId":60611,"at":"2022-10-15T11:11:20.291Z"}
+{"msg":"Number of available CPUs is 8"}
+{"msg":"Primary replica 94977 is running"}
+{"msg":"Worker 94985 started","pId":94985,"at":"2022-10-15T12:18:59.965Z"}
+{"msg":"worker 94985 listening at 3000 🚀","pId":94985,"at":"2022-10-15T12:18:59.980Z"}
+{"msg":"Worker 94984 started","pId":94984,"at":"2022-10-15T12:19:00.467Z"}
+{"msg":"worker 94984 listening at 3000 🚀","pId":94984,"at":"2022-10-15T12:19:00.473Z"}
+{"msg":"Worker 94983 started","pId":94983,"at":"2022-10-15T12:19:00.474Z"}
+{"msg":"Worker 94986 started","pId":94986,"at":"2022-10-15T12:19:00.477Z"}
+{"msg":"worker 94986 listening at 3000 🚀","pId":94986,"at":"2022-10-15T12:19:00.482Z"}
+{"msg":"Worker 94989 started","pId":94989,"at":"2022-10-15T12:19:00.486Z"}
+{"msg":"worker 94983 listening at 3000 🚀","pId":94983,"at":"2022-10-15T12:19:00.488Z"}
+{"msg":"worker 94989 listening at 3000 🚀","pId":94989,"at":"2022-10-15T12:19:00.492Z"}
+{"msg":"Worker 94982 started","pId":94982,"at":"2022-10-15T12:19:00.498Z"}
+{"msg":"worker 94982 listening at 3000 🚀","pId":94982,"at":"2022-10-15T12:19:00.509Z"}
+{"msg":"Worker 94988 started","pId":94988,"at":"2022-10-15T12:19:00.523Z"}
+{"msg":"worker 94988 listening at 3000 🚀","pId":94988,"at":"2022-10-15T12:19:00.528Z"}
+{"msg":"Worker 94987 started","pId":94987,"at":"2022-10-15T12:19:00.549Z"}
+{"msg":"worker 94987 listening at 3000 🚀","pId":94987,"at":"2022-10-15T12:19:00.553Z"}
 ```
 
 ### Forcefully causing application instabilities
@@ -144,7 +148,7 @@ To make the application produce some logs by itself, it was targeted by a simple
 loadtest --rps 4 'http://localhost:3000/to-dos' -H x-user-id:fuhdafhda-fdsfdsaf-fdsfd-dsfds-fddg
 ```
 
-The table below shows a fraction of the log data, with several log fields ignored for simplicity (If you're interested in seeing the full picture, just clone this repo and run it locally):
+The table below shows a fraction of the log data, with several log fields ignored for simplicity (if you're interested in seeing the full picture, just clone this repo and run it locally):
 
 | Message                                                                 | Status Code | Date                     | Process ID |
 | ----------------------------------------------------------------------- | ----------- | ------------------------ | ---------- |
@@ -162,7 +166,7 @@ The table below shows a fraction of the log data, with several log fields ignore
 | Worker 50595 started                                                    | -           | 2022-10-14T12:23:07.028Z | 50595      |
 | worker 50595 listening at 3000 🚀                                       | -           | 2022-10-14T12:23:07.041Z | 50595      |
 
-We can see by the above data that the worker with `pid: 50556` died at 12:23:05, being replaced by the new worker with `pid = 50595` at 12:23:07, which basically shows that it took around 2 seconds for a full worker replacement. We can also see that, as each worker is independent, the other ones kept handling requests normally while the recycling process was in place. Does it worth it, then? I'd say it depends on the load the application usually handles, and how many CPU's you have available in your machine. If it has a light traffic and four to eight cores, two seconds wouldn't be even perceived by the clients.
+We can see by the above data that the worker with `pid: 50556` died at 12:23:05, being replaced by the new worker with `pid: 50595` at 12:23:07, which basically shows that it took around 2 seconds for a full worker replacement. We can also see that, as each worker is independent, the other ones kept handling requests normally while the recycling process was in place. Does it worth it, then? I'd say it depends on the load the application usually handles, and how many CPU's you have available in your machine. If it has a light traffic and four to eight cores, two seconds wouldn't be even perceived by the clients.
 
 ### Conclusion
 
