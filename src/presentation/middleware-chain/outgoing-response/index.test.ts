@@ -3,7 +3,7 @@ import OutgoingResponseMiddleware from '.';
 import * as httpVerbs from '../../http/verbs';
 import * as httpCodes from '../../http/status-codes';
 import FakeExpressFactory from '../../../__mocks__/express/factory';
-import FakeLogger from '../../../monitoring/logger/fake';
+import FakeLogger from '../../../application/observability/logger/fake';
 
 describe('OutgoingResponseMiddleware', () => {
   it('should log request status on res.finish', () => {

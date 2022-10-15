@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import ILogger from '../../../monitoring/logger';
+import ILogger from '../../../application/observability/logger';
 
 export default class OutgoingResponseMiddleware {
   _logger: ILogger;
