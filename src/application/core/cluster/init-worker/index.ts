@@ -16,17 +16,19 @@ const logUncaughtExceptionAndExit = ({ env, logger }: { env: ApplicationEnv; log
   };
 };
 
+export type InitExpressWebServerWorkerFnProps = {
+  env: ApplicationEnv;
+  logger: ILogger;
+  expressApp: Express;
+  createHTTPServer: Function;
+};
+
 const initExpressWebServerWorker = ({
   env,
   logger,
   expressApp,
   createHTTPServer,
-}: {
-  env: ApplicationEnv;
-  logger: ILogger;
-  expressApp: Express;
-  createHTTPServer: Function;
-}) => {
+}: InitExpressWebServerWorkerFnProps) => {
   logger.info({ msg: `Worker ${env.PID} started`, pId: env.PID, at: new Date() });
   process.on('uncaughtException', logUncaughtExceptionAndExit({ env, logger }));
 
