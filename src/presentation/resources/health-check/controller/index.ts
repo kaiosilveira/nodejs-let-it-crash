@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ApplicationEnv } from '../../../../config/env';
-import ApplicationState from '../../../application-state';
+import { ApplicationEnv } from '../../../../application/config/env';
+import ApplicationState from '../../../../application/state';
 
 export type HealthCheckControllerProps = {
   env: ApplicationEnv;

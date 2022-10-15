@@ -1,14 +1,12 @@
 import HealthCheckController from '.';
-import FakeApplicationState from '../../../application-state/fake';
+import testEnv from '../../../../application/config/env/test-env';
+import FakeApplicationState from '../../../../application/state/fake';
 import FakeExpressFactory from '../../../../__mocks__/express/factory';
+
+const env = testEnv;
 
 describe('HealthCheckController', () => {
   describe('getHealthState', () => {
-    const NODE_VERSION = '16.14.0';
-    const COMMIT_SHA = 'cf221f9a162cf80a67f1237318cf5193b9cdce83';
-    const NODE_ENV = 'dev';
-    const env = { NODE_ENV, COMMIT_SHA, NODE_VERSION, PID: 93405 };
-
     it('should return 503: SERVICE UNAVAILABLE while if the application is not ready', () => {
       const applicationState = new FakeApplicationState();
       jest.spyOn(applicationState, 'isReady').mockReturnValueOnce(false);
@@ -39,9 +37,9 @@ describe('HealthCheckController', () => {
 
       expect(spyOnResponseJSON).toHaveBeenCalledWith({
         ready: true,
-        nodeVersion: NODE_VERSION,
-        commitSHA: COMMIT_SHA,
-        environment: NODE_ENV,
+        nodeVersion: env.NODE_VERSION,
+        commitSHA: env.COMMIT_SHA,
+        environment: env.NODE_ENV,
       });
     });
   });
