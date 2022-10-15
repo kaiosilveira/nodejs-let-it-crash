@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import ILogger from '../../../../monitoring/logger';
-import { ApplicationEnv } from '../../../../config/env';
+import ILogger from '../../../../application/observability/logger';
+import { ApplicationEnv } from '../../../../application/config/env';
 
 export const MOCKED_TODO_LIST = [
   { id: 1, title: 'Learn k8s', due: new Date() },

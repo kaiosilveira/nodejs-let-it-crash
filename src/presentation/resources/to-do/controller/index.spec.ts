@@ -1,20 +1,12 @@
 import TodoController, { MOCKED_TODO_LIST } from '.';
-import FakeLogger from '../../../../monitoring/logger/fake';
+import testEnv from '../../../../application/config/env/test-env';
+import FakeLogger from '../../../../application/observability/logger/fake';
 import FakeExpressFactory from '../../../../__mocks__/express/factory';
 
-const env = {
-  NODE_ENV: 'test',
-  COMMIT_SHA: 'unknown',
-  NODE_VERSION: '16.14.0',
-  PID: 93405,
-};
-
+const env = testEnv;
 describe('TodoController', () => {
   describe('list', () => {
-    beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date());
-    });
-
+    beforeEach(() => jest.useFakeTimers().setSystemTime(new Date()));
     afterEach(() => jest.useRealTimers());
 
     it('should list all existing items in the to-do list', () => {
