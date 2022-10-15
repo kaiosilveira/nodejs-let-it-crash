@@ -7,7 +7,7 @@ describe('HealthCheckController', () => {
     const NODE_VERSION = '16.14.0';
     const COMMIT_SHA = 'cf221f9a162cf80a67f1237318cf5193b9cdce83';
     const NODE_ENV = 'dev';
-    const env = { NODE_VERSION, COMMIT_SHA, NODE_ENV };
+    const env = { NODE_ENV, COMMIT_SHA, NODE_VERSION, PID: 93405 };
 
     it('should return 503: SERVICE UNAVAILABLE while if the application is not ready', () => {
       const applicationState = new FakeApplicationState();
