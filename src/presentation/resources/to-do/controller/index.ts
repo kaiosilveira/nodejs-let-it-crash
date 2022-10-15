@@ -4,7 +4,19 @@ export const MOCKED_TODO_LIST = [
 ];
 
 export default class TodoController {
+  private requestCount: number;
+
+  constructor() {
+    this.requestCount = 0;
+  }
+
   async list(_, res) {
-    res.json(MOCKED_TODO_LIST);
+    this.requestCount++;
+
+    if (this.requestCount % 4 === 0) {
+      throw new Error('Mocked error');
+    } else {
+      res.json(MOCKED_TODO_LIST);
+    }
   }
 }

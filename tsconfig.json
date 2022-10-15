@@ -2,8 +2,9 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "include": ["src"],
   "exclude": ["node_modules", "src/**/*.spec.ts", "src/__mocks__/"],
+  "files": ["src/presentation/factory/custom.d.ts"],
   "compilerOptions": {
     "outDir": "dist",
     "noImplicitAny": false
-  }
+  },
 }
