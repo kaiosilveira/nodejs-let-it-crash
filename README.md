@@ -1,6 +1,6 @@
 [![Continuous Integration](https://github.com/kaiosilveira/nodejs-fail-fast/actions/workflows/ci.yml/badge.svg)](https://github.com/kaiosilveira/nodejs-fail-fast/actions/workflows/ci.yml)
 
-This repository is an example implementation in NodeJS of the "Let it crash!" philosophy, as described in the "Release it!" book, by Michael T Nygard, and is part of my Stability Patterns Series. Check out [kaiosilveira/stability-patterns](https://github.com/kaiosilveira/stability-patterns) for more details.
+_This repository is an example implementation in NodeJS of the "Let it crash!" philosophy, as described in the "Release it!" book, by Michael T Nygard, and is part of my Stability Patterns Series. Check out [kaiosilveira/stability-patterns](https://github.com/kaiosilveira/stability-patterns) for more details._
 
 # Let it crash!
 
