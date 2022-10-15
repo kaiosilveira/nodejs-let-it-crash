@@ -17,7 +17,7 @@ describe('forkWorkers', () => {
     forkWorkers({ env, logger, cluster });
 
     expect(logger.info).toHaveBeenNthCalledWith(1, {
-      msg: `Available of CPUs is ${env.AVAILABLE_CPUs}`,
+      msg: `Number of available CPUs is ${env.AVAILABLE_CPUs}`,
     });
 
     expect(logger.info).toHaveBeenNthCalledWith(2, {

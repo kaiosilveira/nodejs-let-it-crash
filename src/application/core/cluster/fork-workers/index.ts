@@ -7,7 +7,7 @@ export type ForkWorkersFnProps = { env: ApplicationEnv; logger: ILogger; cluster
 
 const forkWorkers = ({ env, logger, cluster }: ForkWorkersFnProps) => {
   const { AVAILABLE_CPUs } = env;
-  logger.info({ msg: `Available of CPUs is ${AVAILABLE_CPUs}` });
+  logger.info({ msg: `Number of available CPUs is ${AVAILABLE_CPUs}` });
   logger.info({ msg: `Primary replica ${env.PID} is running` });
 
   for (let i = 0; i < AVAILABLE_CPUs; i++) {
