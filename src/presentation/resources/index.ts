@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { ApplicationEnv } from '../../config/env';
-import InMemoryApplicationState from '../application-state/in-memory';
-import ILogger from '../../monitoring/logger';
+import { ApplicationEnv } from '../../application/config/env';
+import InMemoryApplicationState from '../../application/state/in-memory';
+import ILogger from '../../application/observability/logger';
 import HealthCheckController from './health-check/controller';
 import TodoController from './to-do/controller';
 
