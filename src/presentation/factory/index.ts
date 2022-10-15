@@ -1,10 +1,10 @@
 import Express from 'express';
 import Helmet from 'helmet';
 import Crypto from 'node:crypto';
-import { ApplicationEnv } from '../../config/env';
+import { ApplicationEnv } from '../../application/config/env';
 import IncomingRequestMiddleware from '../middleware-chain/incoming-request';
 import OutgoingResponseMiddleware from '../middleware-chain/outgoing-response';
-import ILogger from '../../monitoring/logger';
+import ILogger from '../../application/observability/logger';
 
 import PresentationResourcesManager from '../resources';
 
