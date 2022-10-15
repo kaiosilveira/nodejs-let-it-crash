@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ApplicationEnv } from '../../../config/env';
-import ILogger from '../../../monitoring/logger';
+import { ApplicationEnv } from '../../../application/config/env';
+import ILogger from '../../../application/observability/logger';
 
 export type IncomingRequestMiddlewareProps = {
   logger: ILogger;
