@@ -1,17 +1,11 @@
 import { Cluster } from 'cluster';
 import { ApplicationEnv } from '../../../config/env';
 import ILogger from '../../../observability/logger';
-import handleClusterExit from '../handle-cluster-exit';
+import handleWorkerExit from '../handle-worker-exit';
 
-const forkWorkers = ({
-  env,
-  logger,
-  cluster,
-}: {
-  env: ApplicationEnv;
-  logger: ILogger;
-  cluster: Cluster;
-}) => {
+export type ForkWorkersFnProps = { env: ApplicationEnv; logger: ILogger; cluster: Cluster };
+
+const forkWorkers = ({ env, logger, cluster }: ForkWorkersFnProps) => {
   const { AVAILABLE_CPUs } = env;
   logger.info({ msg: `Available of CPUs is ${AVAILABLE_CPUs}` });
   logger.info({ msg: `Primary replica ${env.PID} is running` });
@@ -20,7 +14,7 @@ const forkWorkers = ({
     cluster.fork();
   }
 
-  cluster.on('exit', handleClusterExit({ cluster, logger }));
+  cluster.on('exit', handleWorkerExit({ cluster, logger }));
 };
 
 export default forkWorkers;
