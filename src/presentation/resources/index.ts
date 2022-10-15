@@ -1,19 +1,26 @@
 import { Router } from 'express';
+import { ApplicationEnv } from '../../config/env';
 import InMemoryApplicationState from '../application-state/in-memory';
-import HealthCheckController, { ApplicationEnv } from './health-check/controller';
+import ILogger from '../../monitoring/logger';
+import HealthCheckController from './health-check/controller';
+import TodoController from './to-do/controller';
 
 export default class PresentationResourcesManager {
-  static configureRouter(router: Router) {
+  static configureRouter({
+    router,
+    logger,
+    env,
+  }: {
+    router: Router;
+    logger: ILogger;
+    env: ApplicationEnv;
+  }) {
     const applicationState = new InMemoryApplicationState();
-    const env: ApplicationEnv = {
-      NODE_ENV: process.env.NODE_ENV || 'dev',
-      COMMIT_SHA: process.env.COMMIT_SHA || 'unknown',
-      NODE_VERSION: process.version,
-    };
-
     const healthCheckCtrl = new HealthCheckController({ applicationState, env });
+    const todoCtrl = new TodoController({ logger, env });
 
     router.get('/health', healthCheckCtrl.getHealthState);
+    router.get('/to-dos', todoCtrl.list);
 
     applicationState.setReady(true);
     return router;
